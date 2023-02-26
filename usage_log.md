@@ -33,6 +33,7 @@ ACME Monthly Recurring Revenue
 
 
 kTODO 
+https://www.getdbt.com/ui/img/blog/modeling-subscription-revenue/Screen-Shot-2020-01-08-at-2.05.11-PM.png
 有什么开源的 dashboard and project 可以使用? 例如: [superset](https://superset.incubator.apache.org/)
 
 
@@ -103,4 +104,18 @@ SUPERSET_LOAD_EXAMPLES决定superset_init容器是否将示例数据和可视化
 
 连接本地数据库
 - 可以填写容器名称, 也可以填写ip地址; 注意localhost指代的superset容器地址
+
+
+
+CREATE USER postgres WITH PASSWORD 'postgres';
+
+
+GRANT ALL PRIVILEGES ON DATABASE postgres TO postgres;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE PUBLIC TO postgres;
+
+
+GRANT pg_read_all_data TO postgres;
+GRANT pg_write_all_data TO postgres;
 
