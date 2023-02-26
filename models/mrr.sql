@@ -10,7 +10,7 @@ with unioned as (
 
 -- get prior month MRR and calculate MRR change
 mrr_with_changes as (
-
+    select *,mrr - previous_month_mrr as mrr_change from (
     select
         *,
 
@@ -22,11 +22,12 @@ mrr_with_changes as (
         coalesce(
             lag(mrr) over (partition by customer_id order by date_month),
             0
-        ) as previous_month_mrr,
+        ) as previous_month_mrr
 
-        mrr - previous_month_mrr as mrr_change
+        
 
     from unioned
+    ) as st1 
 
 ),
 
@@ -35,7 +36,7 @@ mrr_with_changes as (
 final as (
 
     select
-        {{  dbt_utils.surrogate_key('date_month', 'customer_id') }} as id,
+        {{  dbt_utils.generate_surrogate_key(['date_month', 'customer_id']) }} as id,
 
         *,
 
