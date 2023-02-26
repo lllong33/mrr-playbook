@@ -1,3 +1,9 @@
+# mrr postgreSQL version
+
+
+
+---------- 2023-02-26
+
 # Monthly Recurring Revenue (MRR) playbook.
 This dbt project is a worked example to demonstrate how to model subscription
 revenue. **Check out the full write-up [here](https://blog.getdbt.com/modeling-subscription-revenue/),
