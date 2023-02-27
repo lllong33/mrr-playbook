@@ -119,3 +119,23 @@ GRANT ALL PRIVILEGES ON DATABASE PUBLIC TO postgres;
 GRANT pg_read_all_data TO postgres;
 GRANT pg_write_all_data TO postgres;
 
+
+customize -> Query A -> Y AXIS -> Secondary
+
+
+big number:
+IS title top? 
+IS mom 计算?
+- 没有直接可用的 kpi 
+- 试用下官方提供折线图环比图
+time comparison
+minus 1 week
+time shift 
+calculation type 
+absolute difference 
+
+postgre 计算同环比时, 除法取决分子类型保存小数位数
+
+filter box: stat_mo 日期格式显示数字了
+
+IS colos change?
