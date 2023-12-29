@@ -1,33 +1,33 @@
-{% macro get_intervals_between(start_date, end_date, datepart) -%}
-    {{ return(adapter.dispatch('get_intervals_between', 'dbt_utils')(start_date, end_date, datepart)) }}
-{%- endmacro %}
+{% macro starrocks__datediff(first_date, second_date, datepart) -%}
 
-{% macro default__get_intervals_between(start_date, end_date, datepart) -%}
-    {%- call statement('get_intervals_between', fetch_result=True) %}
+    -- DATE_DIFF(VARCHAR unit, DATETIME expr1, DATETIME expr2)
+    -- unit：差值的时间单位，必填。unit 的取值必须是 year, quarter, month, week，day，hour，minute，second，millisecond。
+    -- expr1，expr2：要进行比较的两个日期值，必填。支持的数据类型为 DATETIME 和 DATE。
+    -- select date_diff('second', '2010-11-30 23:59:59', '2010-11-30 20:58:59');
 
-        select {{ dbt.datediff(start_date, end_date, datepart) }}
-
-    {%- endcall -%}
-
-    {%- set value_list = load_result('get_intervals_between') -%}
-
-    {%- if value_list and value_list['data'] -%}
-        {%- set values = value_list['data'] | map(attribute=0) | list %}
-        {{ return(values[0]) }}
-    {%- else -%}
-        {{ return(1) }}
-    {%- endif -%}
+    -- https://docs.getdbt.com/docs/build/jinja-macros#macros str
+    date_diff(
+        '{{ datepart }}', 
+        {{ second_date }},
+        {{ first_date }}
+        )
 
 {%- endmacro %}
 
 
+{% macro starrocks__dateadd(datepart, interval, from_date_or_timestamp) %}
+
+    -- select date_add('2010-11-30 23:59:59', INTERVAL 2 DAY);
+    date_add(
+        {{ from_date_or_timestamp }}
+        ,interval {{ interval }} {{ datepart }}
+        )
+
+{% endmacro %}
 
 
-{% macro date_spine(datepart, start_date, end_date) %}
-    {{ return(adapter.dispatch('date_spine', 'dbt_utils')(datepart, start_date, end_date)) }}
-{%- endmacro %}
 
-{% macro default__date_spine(datepart, start_date, end_date) %}
+{% macro starrocks__date_spine(datepart, start_date, end_date) %}
 
 
 {# call as follows:
@@ -53,8 +53,8 @@ all_periods as (
         {{
             dbt.dateadd(
                 datepart,
-                "row_number() over (order by 1) - 1",
-                "cast(%s as timestamp)"|format(start_date)
+                "row_number() over () - 1",
+                start_date
             )
         }}
     ) as date_{{datepart}}
@@ -73,3 +73,6 @@ filtered as (
 select * from filtered
 
 {% endmacro %}
+
+
+    

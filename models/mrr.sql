@@ -36,7 +36,7 @@ mrr_with_changes as (
 final as (
 
     select
-        {{  dbt_utils.generate_surrogate_key(['date_month', 'customer_id']) }} as id,
+        {{  dbt_utils.generate_surrogate_key(['date_month', 'customer_id']) }} as id, -- TODO BUG return same id 
 
         *,
 

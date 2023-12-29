@@ -1,3 +1,5 @@
+{{ config(materialized='table', engine='OLAP', buckets=3, distributed_by=['customer_id']) }}
+
 with subscription_periods as (
 
     select * from {{ ref('subscription_periods') }}

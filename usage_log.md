@@ -11,6 +11,60 @@ psql 常用命令
 
 postgresql 也不支持 别名
 
+# dbt_sr 
+
+IS-1: not support int and str; sr version check bug
+
+monthly recurring revenue (MRR)
+
+IS-2 agate.table.Table object has no element 0
+使用jack用户创建的临时表没有权限, 
+
+[x] relation.sql 没做拿错视图异常的捕获, 当没拿到时返回上面报错
+
+[x] IS-3 customer_revenue_by_month 创建视图后, 出现查 information_schema.views  报错 StarRocks process failed
+- 暂时移除view改为table解决
+
+dbt seed properties(yml):
+```yaml
+Complete configuration:
+models:
+  materialized: table       // table or view or materialized_view
+  engine: 'OLAP'
+  keys: ['id', 'name', 'some_date']
+  table_type: 'PRIMARY'     // PRIMARY or DUPLICATE or UNIQUE
+  distributed_by: ['id']
+  buckets: 3                // default 10
+  partition_by: ['some_date']
+  partition_by_init: ["PARTITION p1 VALUES [('1971-01-01 00:00:00'), ('1991-01-01 00:00:00')),PARTITION p1972 VALUES [('1991-01-01 00:00:00'), ('1999-01-01 00:00:00'))"]
+  properties: [{"replication_num":"1", "in_memory": "true"}]
+  refresh_method: 'async' // only for materialized view default manual
+```
+
+dbt run config:
+Example configuration:
+```yaml
+{{ config(materialized='view') }}
+{{ config(materialized='table', engine='OLAP', buckets=32, distributed_by=['id']) }}
+{{ config(materialized='incremental', table_type='PRIMARY', engine='OLAP', buckets=32, distributed_by=['id']) }}
+{{ config(materialized='materialized_view') }}
+{{ config(materialized='materialized_view', properties={"storage_medium":"SSD"}) }}
+{{ config(materialized='materialized_view', refresh_method="ASYNC START('2022-09-01 10:00:00') EVERY (interval 1 day)") }}
+For materialized view only support partition_by、buckets、distributed_by、properties、refresh_method configuration.
+```
+
+[] "replication_num" = "1" 怎么设置默认为3?
+
+default_replication_num
+fe.conf 
+FE动态参数
+ADMIN SHOW FRONTEND CONFIG like 'default_replication_num'
+ADMIN SET FRONTEND CONFIG ("key" = "value");
+查到看默认是3
+临时表确实用副本=1更合适, 暂时只能每张表手动去配置   properties: '{"replication_num":"3"}'
+
+
+IS4-
 
 
 # MRR(Monthly Recurring Revenue) 场景理解

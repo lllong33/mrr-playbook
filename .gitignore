@@ -3,3 +3,6 @@ target/
 dbt_modules/
 logs/
 dbt_packages/
+__pycache__
+mrr_playbook_dagster/tmp*
+nohup.out
