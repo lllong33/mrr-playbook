@@ -9,7 +9,7 @@ schedules = [
     build_schedule_from_dbt_selection(
         [acme_dbt_assets],
         job_name="materialize_dbt_models",
-        cron_schedule="0 0 * * *", # 表示每天凌晨0点执行
+        cron_schedule="0 0 * * *",
         dbt_select="fqn:*",
     ),
 ]

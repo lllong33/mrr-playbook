@@ -5,4 +5,9 @@ logs/
 dbt_packages/
 __pycache__
 mrr_playbook_dagster/tmp*
+mrr_playbook_dagster/history*
+mrr_playbook_dagster/.telemetry
+mrr_playbook_dagster/schedules
+mrr_playbook_dagster/storage
 nohup.out
+*.log
