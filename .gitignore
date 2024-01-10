@@ -11,3 +11,5 @@ mrr_playbook_dagster/schedules
 mrr_playbook_dagster/storage
 nohup.out
 *.log
+profiles.yml
+docs/

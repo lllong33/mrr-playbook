@@ -1,0 +1,21 @@
+FROM dbt_sr_dagster_image:0.0.1
+
+LABEL maintainer="lllong33"
+
+RUN mkdir -p /opt/apps/mrr-playbook
+
+WORKDIR /opt/apps/mrr-playbook
+
+COPY . /opt/apps/mrr-playbook
+
+RUN dbt deps \
+    && dbt debug \
+    && dbt run \
+    && dbt test \
+    && dbt docs generate \
+    && sudo sed -i 's/localhost/0.0.0.0/g' /usr/local/lib/python3.11/site-packages/dbt/task/serve.py
+
+EXPOSE 7010 7080
+
+CMD ["dbt", "docs", "serve", "--port", "7080"]
+

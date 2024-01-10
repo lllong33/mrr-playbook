@@ -1,0 +1,19 @@
+load_from:
+  # References the file copied into your Dockerfile
+  - python_file: repo.py
+#   - python_file:
+#       relative_path: hello_world_repository.py
+#       attribute: hello_world_repository
+  # - python_module: hello_world_repository # 暂时不可用
+  
+  - grpc_server:
+      host: mrr_project
+      port: 7010
+      location_name: "mrr_project" # ui display name
+
+  - grpc_server:
+      host: dagster_example_code
+      port: 7020
+      location_name: "dagster_example_code" # ui display name
+
+

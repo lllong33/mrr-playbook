@@ -1,8 +1,8 @@
-# mrr postgreSQL version
+
+docker-compose up
 
 
-
----------- 2023-02-26
+---------- 2024-01-10 ----
 
 # Monthly Recurring Revenue (MRR) playbook.
 This dbt project is a worked example to demonstrate how to model subscription

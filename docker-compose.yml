@@ -1,0 +1,74 @@
+version: "3.7"
+
+services:
+  pg:
+    env_file: docker/.env
+    image: postgres:15
+    container_name: pg
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  dagster_web:
+    env_file: docker/.env
+    container_name: dagster_web
+    build:
+      context: docker/dagster
+      dockerfile: Dockerfile_dagster_web
+    restart: unless-stopped
+    command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-w", "workspace.yaml"]
+    ports:
+      - 3000:3000
+    depends_on:
+      - pg
+  
+  dagster_daemon:
+    env_file: docker/.env
+    container_name: dagster_daemon
+    build:
+      context: docker/dagster
+      dockerfile: Dockerfile_dagster_web
+    restart: unless-stopped
+    command: ["dagster-daemon", "run"]
+    depends_on:
+      - pg
+  
+  mrr_project_docs:
+    env_file: docker/.env
+    container_name: mrr_project_docs
+    build:
+      context: . # 这里修改会导致 workdir 改变
+      dockerfile: dbt_sr_dockerfile
+    restart: unless-stopped
+    command: ["dbt", "docs", "serve", "--port", "7080"]
+    ports:
+      - 7080:7080
+    
+  mrr_project:
+    env_file: docker/.env
+    container_name: mrr_project
+    build:
+      context: .
+      dockerfile: dbt_sr_dockerfile
+    restart: unless-stopped
+    command: ["dagster", "api", "grpc", "--working-directory", "/opt/apps/mrr-playbook/mrr_playbook_dagster", "--module-name", "mrr_playbook_dagster", "--host", "0.0.0.0", "--port", "7010"]
+    ports:
+      - 7010:7010  
+
+  dagster_example_code:
+    env_file: docker/.env
+    container_name: dagster_example_code
+    build:
+      context: docker/dagster
+      dockerfile: ./Dockerfile_user_code
+    restart: unless-stopped
+    command: ["dagster", "api", "grpc", "-h", "0.0.0.0", "-p", "7020", "-f", "repo.py"]
+    ports:
+      - 7020:7020
+
+volumes:
+  pg_data:
+    external: false
+

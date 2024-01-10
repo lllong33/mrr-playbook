@@ -1,9 +1,0 @@
-FROM python:3.11.7
-RUN groupadd -r l3 && useradd -r -g l3 l3
-USER l3
-RUN mkdir -p ~/.dbt/
-RUN mkdir -p /opt/apps/
-COPY dbt_sr_start.sh /opt/apps/
-COPY ~/.dbt/profiles.yml ~/.dbt/
-WORKDIR /opt/apps/
-CMD ["/bin/sh", "-c", "sh ./dbt_sr_start.sh"]
