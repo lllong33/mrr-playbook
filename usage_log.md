@@ -1,3 +1,23 @@
+
+1. 尝试本地 wsl2 启动项目, 并梳理这个过程
+docker-compose up 
+
+check:
+- dbt_project.yml profile
+- profiles.yml db_info
+- dbt debug 
+- view docker-compose.yml
+curl -v google.com
+
+这个镜像需要自己重新根据 dockerfile 本地打一下
+load metadata for docker.io/library/dbt_sr_dagster_image:0.0.1:
+TODO 有难度, 且兴趣有限暂时搁置
+
+2. 尝试梳理 MRR 表和数据流
+seeds: 
+
+--------- 2024-04-19
+
 Core:
   - installed: 1.4.3
   - latest:    1.4.3 - Up to date!
@@ -64,33 +84,41 @@ ADMIN SET FRONTEND CONFIG ("key" = "value");
 临时表确实用副本=1更合适, 暂时只能每张表手动去配置   properties: '{"replication_num":"3"}'
 
 
-IS4-
-
-
 # MRR(Monthly Recurring Revenue) 场景理解
-[ref_here](https://blog.getdbt.com/modeling-subscription-revenue/),
-
-
 订阅组件: 
 分析流失、升级和降级等指标
 了解您的订户群的健康状况
 
+缺点:
+- 源数据编写查询, 变得复杂, 逻辑重复.
+
 use dbt 原因:
-- 模型逻辑固定, 仅在来源转换(标准化)数据
+- 模型逻辑固定, 仅在来源转换(标准化)数据, 统一口径.
 - 模型测试用例, 保证数据质量(符合预期)
 - 支持业务adhoc
 
+change_category: new, churn, upgrade, downgrade, reactivation
+- 补全月份(date spining), 标注出 churn, upgrade 
+- identify first and last active month 
+  - is_last_month -> is_active
+- generate churn month; 
+
+```sql
+case
+  when is_first_month
+      then 'new'
+  when not(is_active) and previous_month_is_active
+      then 'churn'
+  when is_active and not(previous_month_is_active)
+      then 'reactivation'
+  when mrr_change > 0 then 'upgrade'
+  when mrr_change < 0 then 'downgrade' end as change_category
+```
 
 ACME Monthly Recurring Revenue
 
 ## DashBoard module
-
-
-kTODO 
-https://www.getdbt.com/ui/img/blog/modeling-subscription-revenue/Screen-Shot-2020-01-08-at-2.05.11-PM.png
-有什么开源的 dashboard and project 可以使用? 例如: [superset](https://superset.incubator.apache.org/)
-
-
+ex: https://www.getdbt.com/ui/img/blog/modeling-subscription-revenue/Screen-Shot-2020-01-08-at-2.05.11-PM.png
 - Current_Customers, MOM
 - Current_MRR, MOM
 - MRR and Customers, 近一年趋势图

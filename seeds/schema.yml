@@ -16,3 +16,15 @@ seeds:
       # test that the end date of a subscription is the first of the month
       - dbt_utils.expression_is_true:
           expression: date_trunc('month', end_date) = end_date
+
+  - name: cust_order_pkg_df
+    config:
+      properties: '{"replication_num":"1", "in_memory": "true"}'
+    # set field type 
+    +column_types:
+      order_id: string 
+      pkg_id: string
+      u_id: string
+      order_date: date
+      send_date: date
+      arrive_date: date
